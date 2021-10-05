@@ -23,6 +23,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.MapData;
 import net.minecraftforge.fml.network.NetworkHooks;
+import pepjebs.dicemc.MapAtlases;
 import pepjebs.dicemc.config.Config;
 import pepjebs.dicemc.gui.MapAtlasesAtlasOverviewScreenHandler;
 import pepjebs.dicemc.setup.Registration;
@@ -51,24 +52,25 @@ public class MapAtlasItem extends Item{
 
         if (world != null && world.isClientSide()) {
             MapData MapData = MapAtlasesAccessUtils.getFirstMapDataFromAtlas(world, stack);
+            String atlas_item_id = "item."+MapAtlases.MOD_ID+".atlas";
             if (MapData == null) {
-                tooltip.add(new TranslationTextComponent("item.map_atlases.atlas.tooltip_err")
+                tooltip.add(new TranslationTextComponent(atlas_item_id+".tooltip_err")
                         .withStyle(TextFormatting.ITALIC).withStyle(TextFormatting.GRAY));
                 return;
             }
             int mapSize = MapAtlasesAccessUtils.getMapCountFromItemStack(stack);
             int empties = MapAtlasesAccessUtils.getEmptyMapCountFromItemStack(stack);
             if (mapSize + empties >= getMaxMapCount()) {
-                tooltip.add(new TranslationTextComponent("item.map_atlases.atlas.tooltip_full")
+                tooltip.add(new TranslationTextComponent(atlas_item_id+".tooltip_full")
                         .withStyle(TextFormatting.ITALIC).withStyle(TextFormatting.GRAY));
             }
-            tooltip.add(new TranslationTextComponent("item.map_atlases.atlas.tooltip_1", mapSize)
+            tooltip.add(new TranslationTextComponent(atlas_item_id+".tooltip_1", mapSize)
                     .withStyle(TextFormatting.GRAY));
             if (Config.ENABLE_EMPTY_MAP_ENTRY_AND_FILL.get()) {
-                tooltip.add(new TranslationTextComponent("item.map_atlases.atlas.tooltip_2", empties)
+                tooltip.add(new TranslationTextComponent(atlas_item_id+".tooltip_2", empties)
                         .withStyle(TextFormatting.GRAY));
             }
-            tooltip.add(new TranslationTextComponent("item.map_atlases.atlas.tooltip_3", 1 << MapData.scale)
+            tooltip.add(new TranslationTextComponent(atlas_item_id+".tooltip_3", 1 << MapData.scale)
                     .withStyle(TextFormatting.GRAY));
         }
     }
