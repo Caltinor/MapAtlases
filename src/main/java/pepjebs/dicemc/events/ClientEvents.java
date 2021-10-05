@@ -18,11 +18,11 @@ public class ClientEvents {
 	@SuppressWarnings("resource")
 	@SubscribeEvent
 	public static void mapAtlasClientTick(ClientTickEvent event) {
-        if (ClientSetup.displayMapGUIBinding.isDown()) {
-            if (Minecraft.getInstance().level == null || Minecraft.getInstance().player == null) return;
-            ItemStack atlas = MapAtlasesAccessUtils.getAtlasFromPlayerByHotbar(Minecraft.getInstance().player.inventory);
-            if (atlas.isEmpty()) return;
-            Networking.sendToServer(new MapAtlasesOpenGUIC2SPacket(atlas));
-        }
-    }
+		if (ClientSetup.displayMapGUIBinding.isDown()) {
+			if (Minecraft.getInstance().level == null || Minecraft.getInstance().player == null) return;
+			ItemStack atlas = MapAtlasesAccessUtils.getAtlasFromPlayerByHotbar(Minecraft.getInstance().player.inventory);
+			if (atlas.isEmpty()) return;
+			Networking.sendToServer(new MapAtlasesOpenGUIC2SPacket(atlas));
+		}
+	}
 }
