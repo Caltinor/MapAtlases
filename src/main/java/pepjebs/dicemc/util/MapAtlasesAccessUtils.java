@@ -1,5 +1,14 @@
 package pepjebs.dicemc.util;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.FilledMapItem;
@@ -12,12 +21,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.MapData;
 import net.minecraft.world.storage.MapDecoration;
-import pepjebs.dicemc.MapAtlases;
 import pepjebs.dicemc.config.Config;
 import pepjebs.dicemc.setup.Registration;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 public class MapAtlasesAccessUtils {
 

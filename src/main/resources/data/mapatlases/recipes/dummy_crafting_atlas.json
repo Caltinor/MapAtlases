@@ -1,18 +1,18 @@
 {
-    "type": "minecraft:crafting_shapeless",
-    "ingredients": [
-        {
-            "item": "minecraft:book"
-        },
-        {
-            "tag": "mapatlases:sticky_crafting_items"
-        },
-        {
-            "item": "mapatlases:dummy_filled_map"
-        }
-    ],
-    "result": {
-        "item": "mapatlases:atlas",
-        "count": 1
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "minecraft:book"
+    },
+    {
+      "tag": "mapatlases:sticky_crafting_items"
+    },
+    {
+      "item": "mapatlases:dummy_filled_map"
     }
+  ],
+  "result": {
+    "item": "mapatlases:atlas",
+    "count": 1
+  }
 }
