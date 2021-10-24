@@ -32,7 +32,7 @@ import pepjebs.dicemc.util.MapAtlasesAccessUtils;
 
 @Mod.EventBusSubscriber(modid=MapAtlases.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ServerEvents {
-	
+
 	public static final ResourceLocation MAP_ATLAS_ACTIVE_STATE_CHANGE = new ResourceLocation(
 			MapAtlases.MOD_ID, "active_state_change");
 
@@ -44,7 +44,7 @@ public class ServerEvents {
 
 	// Holds the current MapState ID for each player
 	private static final Map<String, String> playerToActiveMapId = new HashMap<>();
-	
+
 	public static MinecraftServer server;
 
 	//TODO Figure out what this is for
@@ -80,12 +80,12 @@ public class ServerEvents {
 					MapAtlasesMod.ATLAS_OPEN_SOUND_EVENT, SoundCategory.PLAYERS, 1.0F, 1.0F);
 		});
 	}*/
-	
+
 	@SubscribeEvent
 	public static void onServerStart(FMLServerAboutToStartEvent event) {
 		server = event.getServer();
 	}
-	
+
 	@SubscribeEvent
 	public static void mapAtlasPlayerJoin(PlayerLoggedInEvent event) {
 		if (!event.getPlayer().level.isClientSide) {
@@ -101,7 +101,7 @@ public class ServerEvents {
 			}
 		}
 	}
-	
+
 	@SubscribeEvent
 	public static void mapAtlasServerTick(ServerTickEvent event) {
 		for (ServerPlayerEntity player : server.getPlayerList().getPlayers()) {
@@ -149,7 +149,7 @@ public class ServerEvents {
 					scale = state.scale;
 				}
 
-				if (!Config.ENABLE_EMPTY_MAP_ENTRY_AND_FILL.get()) continue;
+				if (!Config.getEnableEmptyMapEntryAndFill()) continue;
 				if (atlas.getTag() == null) continue;
 				String oldAtlasTagState = atlas.getTag().toString();
 				List<Integer> mapIds = Arrays.stream(

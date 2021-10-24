@@ -15,7 +15,6 @@ import net.minecraft.world.storage.MapData;
 import net.minecraftforge.registries.ObjectHolder;
 import pepjebs.dicemc.MapAtlases;
 import pepjebs.dicemc.config.Config;
-import pepjebs.dicemc.item.MapAtlasItem;
 import pepjebs.dicemc.setup.Registration;
 import pepjebs.dicemc.util.MapAtlasesAccessUtils;
 
@@ -41,7 +40,7 @@ public class MapAtlasesAddRecipe extends SpecialRecipe {
 
 		// Ensure only correct ingredients are present
 		List<Item> additems = new ArrayList<>(Arrays.asList(Items.FILLED_MAP, Registration.MAP_ATLAS.get()));
-		if (Config.ENABLE_EMPTY_MAP_ENTRY_AND_FILL.get())
+		if (Config.getEnableEmptyMapEntryAndFill())
 			additems.add(Items.MAP);
 		if (!(itemStacks.size() > 1 && MapAtlasesAccessUtils.isListOnlyIngredients(
 				itemStacks,
@@ -52,7 +51,7 @@ public class MapAtlasesAddRecipe extends SpecialRecipe {
 		// Ensure we're not trying to add too many Maps
 		int empties = MapAtlasesAccessUtils.getEmptyMapCountFromItemStack(atlas);
 		int mapCount = MapAtlasesAccessUtils.getMapCountFromItemStack(atlas);
-		if (empties + mapCount + itemStacks.size() - 1 > MapAtlasItem.getMaxMapCount()) return false;
+		if (empties + mapCount + itemStacks.size() - 1 > Config.getMaxMapCount()) return false;
 
 		// Ensure Filled Maps are all same Scale & Dimension
 		if(!(MapAtlasesAccessUtils.areMapsSameScale(sampleMap, mapStates) &&
@@ -84,7 +83,7 @@ public class MapAtlasesAddRecipe extends SpecialRecipe {
 
 	@Override
 	public IRecipeSerializer<?> getSerializer() {return SERIALIZER;}
-	
+
 	@ObjectHolder(MapAtlases.MOD_ID+":atlas_add")
 	public static SpecialRecipeSerializer<MapAtlasesAddRecipe> SERIALIZER;
 

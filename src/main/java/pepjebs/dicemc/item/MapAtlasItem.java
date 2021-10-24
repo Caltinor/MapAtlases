@@ -42,10 +42,6 @@ public class MapAtlasItem extends Item{
 		super(new Item.Properties().tab(ItemGroup.TAB_TOOLS));
 	}
 
-	public static int getMaxMapCount() {
-		return Config.MAX_MAP_COUNT.get();
-	}
-
 	@Override
 	public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag context) {
 		super.appendHoverText(stack, world, tooltip, context);
@@ -60,13 +56,13 @@ public class MapAtlasItem extends Item{
 			}
 			int mapSize = MapAtlasesAccessUtils.getMapCountFromItemStack(stack);
 			int empties = MapAtlasesAccessUtils.getEmptyMapCountFromItemStack(stack);
-			if (mapSize + empties >= getMaxMapCount()) {
+			if (mapSize + empties >= Config.getMaxMapCount()) {
 				tooltip.add(new TranslationTextComponent(atlas_item_id+".tooltip_full")
 						.withStyle(TextFormatting.ITALIC).withStyle(TextFormatting.GRAY));
 			}
 			tooltip.add(new TranslationTextComponent(atlas_item_id+".tooltip_1", mapSize)
 					.withStyle(TextFormatting.GRAY));
-			if (Config.ENABLE_EMPTY_MAP_ENTRY_AND_FILL.get()) {
+			if (Config.getEnableEmptyMapEntryAndFill()) {
 				tooltip.add(new TranslationTextComponent(atlas_item_id+".tooltip_2", empties)
 						.withStyle(TextFormatting.GRAY));
 			}

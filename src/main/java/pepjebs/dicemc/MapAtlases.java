@@ -8,9 +8,11 @@ import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.SpecialRecipeSerializer;
 import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import pepjebs.dicemc.config.Config;
 import pepjebs.dicemc.gui.MapAtlasesAtlasOverviewScreenHandler;
 import pepjebs.dicemc.recipe.MapAtlasCreateRecipe;
 import pepjebs.dicemc.recipe.MapAtlasesAddRecipe;
@@ -27,20 +29,21 @@ public class MapAtlases
     // Directly reference a log4j logger.
     public static final Logger LOGGER = LogManager.getLogger();
 
-    public MapAtlases() {    	
+    public MapAtlases() {
     	Registration.init();
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::init);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
         FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(IRecipeSerializer.class, this::registerRecipeSerializers);
         FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(ContainerType.class, this::registerContainers);
-        
+
        // MinecraftForge.EVENT_BUS.register(this);
     }
-    
+
     public void setup(final FMLCommonSetupEvent event) {
     	Networking.registerMessages();
+        Config.register(FMLJavaModLoadingContext.get().getModEventBus(), ModLoadingContext.get());
     }
-    
+
     public void registerRecipeSerializers(RegistryEvent.Register<IRecipeSerializer<?>> event) {
         event.getRegistry().registerAll(
                 new SpecialRecipeSerializer<>(MapAtlasesCutExistingRecipe::new).setRegistryName("atlas_cut"),
@@ -48,10 +51,8 @@ public class MapAtlases
                 new SpecialRecipeSerializer<>(MapAtlasCreateRecipe::new).setRegistryName("atlas_create")
         );
     }
-    
+
     public void registerContainers(RegistryEvent.Register<ContainerType<?>> event) {
     	event.getRegistry().registerAll(IForgeContainerType.create(MapAtlasesAtlasOverviewScreenHandler::new).setRegistryName("gui_container"));
     }
-
-    
 }

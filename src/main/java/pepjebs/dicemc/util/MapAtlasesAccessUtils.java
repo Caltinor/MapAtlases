@@ -87,7 +87,7 @@ public class MapAtlasesAccessUtils {
                 .filter(i -> i.sameItemStackIgnoreDurability(new ItemStack(Registration.MAP_ATLAS.get())))
                 .findFirst().orElse(null);
 
-        if (Config.FORCE_USE_IN_HANDS.get()) {
+        if (Config.getForceUseInHands()) {
             itemStack = null;
             ItemStack mainHand = inventory.items.get(inventory.selected);
             if (mainHand.getItem() == Registration.MAP_ATLAS.get())

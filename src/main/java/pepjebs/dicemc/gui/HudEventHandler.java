@@ -29,7 +29,7 @@ public class HudEventHandler {
 			new ResourceLocation("textures/map/map_background_checkerboard.png");
 	private static Minecraft client = Minecraft.getInstance();
 	private static String currentMapId = "";
-	
+
 	@SuppressWarnings("resource")
 	@SubscribeEvent
 	public static void onHUD(RenderGameOverlayEvent.Post event) {
@@ -40,19 +40,19 @@ public class HudEventHandler {
 			}
 		}
 	}
-	
+
 	private static ItemStack shouldDraw(Minecraft mc) {
 		// Forcibly only render on Overworld since player trackers don't disappear from Overworld
 		// in other dimensions in vanilla MC
 		if (mc.player == null || !mc.player.level.dimension().equals(World.OVERWORLD)) return ItemStack.EMPTY;
 		// Check config disable
-		if (!Config.DRAW_MINIMAP_HUD.get()) return ItemStack.EMPTY;
+		if (!Config.getDrawMinimapHud()) return ItemStack.EMPTY;
 		// Check F3 menu displayed
 		if (mc.options.renderDebug) return ItemStack.EMPTY;
 		// Check the hot-bar for an Atlas
 		return MapAtlasesAccessUtils.getAtlasFromPlayerByConfig(mc.player.inventory);
 	}
-	
+
 	private static void renderMapHUDFromItemStack(MatrixStack matrices, ItemStack atlas, MapItemRenderer mapRenderer) {
 		if (client.level == null ||client.player == null) {
 			MapAtlases.LOGGER.warn("renderMapHUDFromItemStack: Current map id - null (client.world)");
@@ -75,7 +75,7 @@ public class HudEventHandler {
 		}
 		// Draw map background
 		int mapScaling = 64;
-		mapScaling = Config.FORCE_MINIMAP_SCALING.get();
+		mapScaling = Config.getForceMinimapScaling();
 		int y = 0;
 		if (!client.player.getActiveEffects().isEmpty()) {
 			y = 26;
@@ -87,7 +87,7 @@ public class HudEventHandler {
 		// Draw map data
 		x += (mapScaling / 16) - (mapScaling / 64);
 		y += (mapScaling / 16) - (mapScaling / 64);;
-		matrices.pushPose();        
+		matrices.pushPose();
 		IRenderTypeBuffer.Impl vcp;
 		vcp = IRenderTypeBuffer.immediate(Tessellator.getInstance().getBuilder());
 		matrices.translate(x, y, 0.0);
