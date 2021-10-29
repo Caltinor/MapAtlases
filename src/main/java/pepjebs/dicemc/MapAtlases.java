@@ -8,9 +8,12 @@ import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.SpecialRecipeSerializer;
 import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import pepjebs.dicemc.config.Config;
 import pepjebs.dicemc.gui.MapAtlasesAtlasOverviewScreenHandler;
 import pepjebs.dicemc.recipe.MapAtlasCreateRecipe;
 import pepjebs.dicemc.recipe.MapAtlasesAddRecipe;
@@ -27,7 +30,8 @@ public class MapAtlases
     // Directly reference a log4j logger.
     public static final Logger LOGGER = LogManager.getLogger();
 
-    public MapAtlases() {    	
+    public MapAtlases() {  
+    	ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.SERVER_CONFIG);
     	Registration.init();
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::init);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
