@@ -26,6 +26,10 @@ import pepjebs.dicemc.setup.Registration;
 @Mod(MapAtlases.MOD_ID)
 public class MapAtlases
 {
+	/*  This branch was created just to store a workable
+	*	version of 1.17 somewhere.  This neither launches
+	*	nor does it compile.  
+	*/
 	public static final String MOD_ID = "mapatlases";
     // Directly reference a log4j logger.
     public static final Logger LOGGER = LogManager.getLogger();
