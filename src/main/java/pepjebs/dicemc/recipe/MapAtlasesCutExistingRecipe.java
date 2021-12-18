@@ -21,9 +21,9 @@ import pepjebs.dicemc.util.MapAtlasesAccessUtils;
 
 public class MapAtlasesCutExistingRecipe extends CustomRecipe {
 
-    public MapAtlasesCutExistingRecipe(ResourceLocation id) {
-        super(id);
-    }
+	public MapAtlasesCutExistingRecipe(ResourceLocation id) {
+		super(id);
+	}
 
     @Override
     public NonNullList<ItemStack> getRemainingItems(CraftingContainer inv) {
@@ -43,57 +43,57 @@ public class MapAtlasesCutExistingRecipe extends CustomRecipe {
                         didRemoveFilled = true;
                     }
 
-                }
-                if (MapAtlasesAccessUtils.getEmptyMapCountFromItemStack(cur) > 0 && !didRemoveFilled) {
-                    cur.getTag().putInt("empty", cur.getTag().getInt("empty") - 1);
-                }
-            }
-            list.add(cur);
-        }
-        return list;
-    }
+				}
+				if (MapAtlasesAccessUtils.getEmptyMapCountFromItemStack(cur) > 0 && !didRemoveFilled) {
+					cur.getTag().putInt("empty", cur.getTag().getInt("empty") - 1);
+				}
+			}
+			list.add(cur);
+		}
+		return list;
+	}
 
 	@Override
 	public boolean matches(CraftingContainer inv, Level world) {
 		ItemStack atlas = ItemStack.EMPTY;
-	    ItemStack shears = ItemStack.EMPTY;
-	    int size = 0;
-	    for(int i = 0; i < inv.getContainerSize(); i++) {
-	        if (!inv.getItem(i).isEmpty()) {
-	            size++;
-	            if (inv.getItem(i).getItem().equals(Registration.MAP_ATLAS.get())) {
-	                atlas = inv.getItem(i);
-	            } else if (inv.getItem(i).getItem().equals(Items.SHEARS)) {
-	                shears = inv.getItem(i);
-	            }
-	        }
-	    }
-	    return !atlas.isEmpty() && !shears.isEmpty() && size == 2;
+		ItemStack shears = ItemStack.EMPTY;
+		int size = 0;
+		for(int i = 0; i < inv.getContainerSize(); i++) {
+			if (!inv.getItem(i).isEmpty()) {
+				size++;
+				if (inv.getItem(i).getItem().equals(Registration.MAP_ATLAS.get())) {
+					atlas = inv.getItem(i);
+				} else if (inv.getItem(i).getItem().equals(Items.SHEARS)) {
+					shears = inv.getItem(i);
+				}
+			}
+		}
+		return !atlas.isEmpty() && !shears.isEmpty() && size == 2;
 	}
 
 	@Override
 	public ItemStack assemble(CraftingContainer inv) {
 		ItemStack atlas = ItemStack.EMPTY;
-        for(int i = 0; i < inv.getContainerSize(); i++) {
-            if (!inv.getItem(i).isEmpty()) {
-                if (inv.getItem(i).getItem().equals(Registration.MAP_ATLAS.get())) {
-                    atlas = inv.getItem(i);
-                }
-            }
-        }
-        if (atlas.getTag() == null) return ItemStack.EMPTY;
-        if (MapAtlasesAccessUtils.getMapCountFromItemStack(atlas) > 1) {
-            List<Integer> mapIds = Arrays.stream(atlas.getTag()
-                    .getIntArray("maps")).boxed().collect(Collectors.toList());
-            if (mapIds.size() > 0) {
-                int lastId = mapIds.remove(mapIds.size() - 1);
-                return MapAtlasesAccessUtils.createMapItemStackFromId(lastId);
-            }
-        }
-        if (MapAtlasesAccessUtils.getEmptyMapCountFromItemStack(atlas) > 0) {
-            return new ItemStack(Items.MAP);
-        }
-        return ItemStack.EMPTY;
+		for(int i = 0; i < inv.getContainerSize(); i++) {
+			if (!inv.getItem(i).isEmpty()) {
+				if (inv.getItem(i).getItem().equals(Registration.MAP_ATLAS.get())) {
+					atlas = inv.getItem(i);
+				}
+			}
+		}
+		if (atlas.getTag() == null) return ItemStack.EMPTY;
+		if (MapAtlasesAccessUtils.getMapCountFromItemStack(atlas) > 1) {
+			List<Integer> mapIds = Arrays.stream(atlas.getTag()
+					.getIntArray("maps")).boxed().collect(Collectors.toList());
+			if (mapIds.size() > 0) {
+				int lastId = mapIds.remove(mapIds.size() - 1);
+				return MapAtlasesAccessUtils.createMapItemStackFromId(lastId);
+			}
+		}
+		if (MapAtlasesAccessUtils.getEmptyMapCountFromItemStack(atlas) > 0) {
+			return new ItemStack(Items.MAP);
+		}
+		return ItemStack.EMPTY;
 	}
 
 	@Override

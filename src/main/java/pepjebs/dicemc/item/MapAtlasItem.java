@@ -41,9 +41,9 @@ public class MapAtlasItem extends Item{
         super(new Item.Properties().tab(CreativeModeTab.TAB_TOOLS));
     }
 
-    public static int getMaxMapCount() {
-        return Config.MAX_MAP_COUNT.get();
-    }
+	public static int getMaxMapCount() {
+		return Config.MAX_MAP_COUNT.get();
+	}
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag context) {
@@ -115,7 +115,7 @@ public class MapAtlasItem extends Item{
         }
     }
 
-    @SuppressWarnings("resource")
+	@SuppressWarnings("resource")
 	@Override
     public InteractionResult useOn(UseOnContext context) {
         if (context.getPlayer() == null || context.getLevel().isClientSide) return super.useOn(context);

@@ -14,11 +14,11 @@ import pepjebs.dicemc.setup.Registration;
 
 
 public class MapAtlasesOpenGUIC2SPacket{
-    public ItemStack atlas;
+	public ItemStack atlas;
 
-    public MapAtlasesOpenGUIC2SPacket(ItemStack atlas1) {
-        atlas = atlas1;
-    }
+	public MapAtlasesOpenGUIC2SPacket(ItemStack atlas1) {
+		atlas = atlas1;
+	}
 
     public  MapAtlasesOpenGUIC2SPacket(FriendlyByteBuf buf) {
         atlas = buf.readItem();

@@ -25,9 +25,9 @@ public class MapAtlasesAddRecipe extends CustomRecipe {
 
     private Level world = null;
 
-    public MapAtlasesAddRecipe(ResourceLocation id) {
-        super(id);
-    }
+	public MapAtlasesAddRecipe(ResourceLocation id) {
+		super(id);
+	}
 
     @Override
     public boolean matches(CraftingContainer inv, Level world) {
@@ -49,19 +49,20 @@ public class MapAtlasesAddRecipe extends CustomRecipe {
             return false;
         List<MapItemSavedData> mapStates = MapAtlasesAccessUtils.getMapDatasFromItemStacks(world, itemStacks);
 
-        // Ensure we're not trying to add too many Maps
-        int empties = MapAtlasesAccessUtils.getEmptyMapCountFromItemStack(atlas);
-        int mapCount = MapAtlasesAccessUtils.getMapCountFromItemStack(atlas);
-        if (empties + mapCount + itemStacks.size() - 1 > MapAtlasItem.getMaxMapCount()) return false;
 
-        // Ensure Filled Maps are all same Scale & Dimension
-        if(!(MapAtlasesAccessUtils.areMapsSameScale(sampleMap, mapStates) &&
-                MapAtlasesAccessUtils.areMapsSameDimension(sampleMap, mapStates))) return false;
+		// Ensure we're not trying to add too many Maps
+		int empties = MapAtlasesAccessUtils.getEmptyMapCountFromItemStack(atlas);
+		int mapCount = MapAtlasesAccessUtils.getMapCountFromItemStack(atlas);
+		if (empties + mapCount + itemStacks.size() - 1 > MapAtlasItem.getMaxMapCount()) return false;
 
-        // Ensure there's only one Atlas
-        return itemStacks.stream().filter(i ->
-                i.sameItem(new ItemStack(Registration.MAP_ATLAS.get()))).count() == 1;
-    }
+		// Ensure Filled Maps are all same Scale & Dimension
+		if(!(MapAtlasesAccessUtils.areMapsSameScale(sampleMap, mapStates) &&
+				MapAtlasesAccessUtils.areMapsSameDimension(sampleMap, mapStates))) return false;
+
+		// Ensure there's only one Atlas
+		return itemStacks.stream().filter(i ->
+				i.sameItem(new ItemStack(Registration.MAP_ATLAS.get()))).count() == 1;
+	}
 
     @Override
     public ItemStack assemble(CraftingContainer inv) {
@@ -88,8 +89,8 @@ public class MapAtlasesAddRecipe extends CustomRecipe {
 	@ObjectHolder(MapAtlases.MOD_ID+":atlas_add")
 	public static SimpleRecipeSerializer<MapAtlasesAddRecipe> SERIALIZER;
 
-    @Override
-    public boolean canCraftInDimensions(int width, int height) {
-        return width * height >= 2;
-    }
+	@Override
+	public boolean canCraftInDimensions(int width, int height) {
+		return width * height >= 2;
+	}
 }

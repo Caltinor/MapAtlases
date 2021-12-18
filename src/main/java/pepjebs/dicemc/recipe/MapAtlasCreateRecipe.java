@@ -24,9 +24,9 @@ public class MapAtlasCreateRecipe extends CustomRecipe{
 
     private Level world = null;
 
-    public MapAtlasCreateRecipe(ResourceLocation id) {
-        super(id);
-    }
+	public MapAtlasCreateRecipe(ResourceLocation id) {
+		super(id);
+	}
 
     @Override
     public boolean matches(CraftingContainer inv, Level world) {
@@ -95,8 +95,8 @@ public class MapAtlasCreateRecipe extends CustomRecipe{
     @ObjectHolder(MapAtlases.MOD_ID+":atlas_create")
 	public static SimpleRecipeSerializer<MapAtlasCreateRecipe> SERIALIZER;
 
-    @Override
-    public boolean canCraftInDimensions(int width, int height) {
-        return width * height >= 3;
-    }
+	@Override
+	public boolean canCraftInDimensions(int width, int height) {
+		return width * height >= 3;
+	}
 }

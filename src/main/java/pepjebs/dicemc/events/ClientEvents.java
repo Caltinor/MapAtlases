@@ -25,4 +25,5 @@ public class ClientEvents {
             Networking.sendToServer(new MapAtlasesOpenGUIC2SPacket(atlas));
         }
     }
+
 }

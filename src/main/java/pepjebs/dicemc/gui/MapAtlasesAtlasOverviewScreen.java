@@ -21,16 +21,16 @@ import com.mojang.blaze3d.vertex.PoseStack;
 public class MapAtlasesAtlasOverviewScreen extends AbstractContainerScreen<MapAtlasesAtlasOverviewScreenHandler> {
 	private Minecraft client = Minecraft.getInstance();
 
-    private static final int ZOOM_BUCKET = 4;
-    private static final int PAN_BUCKET = 25;
+	private static final int ZOOM_BUCKET = 4;
+	private static final int PAN_BUCKET = 25;
 
-    private final ItemStack atlas;
-    public Map<Integer, List<Integer>> idsToCenters;
-    private int mouseXOffset = 0;
-    private int mouseYOffset = 0;
-    private int zoomValue = ZOOM_BUCKET;
+	private final ItemStack atlas;
+	public Map<Integer, List<Integer>> idsToCenters;
+	private int mouseXOffset = 0;
+	private int mouseYOffset = 0;
+	private int zoomValue = ZOOM_BUCKET;
 
-    private Map<Integer, List<Double>> zoomMapping;
+	private Map<Integer, List<Double>> zoomMapping;
 
     public MapAtlasesAtlasOverviewScreen(MapAtlasesAtlasOverviewScreenHandler handler, Inventory inventory, Component title) {
     	super(handler, inventory, title);
@@ -50,31 +50,31 @@ public class MapAtlasesAtlasOverviewScreen extends AbstractContainerScreen<MapAt
         renderBg(matrices, delta, mouseX, mouseY);
     }
 
-    @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        if (button == 0) {
-            mouseXOffset += deltaX;
-            mouseYOffset += deltaY;
-            return true;
-        }
-        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
-    }
+	@Override
+	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+		if (button == 0) {
+			mouseXOffset += deltaX;
+			mouseYOffset += deltaY;
+			return true;
+		}
+		return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+	}
 
-    @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-        zoomValue += -1 * amount;
-        zoomValue = Math.max(zoomValue, -1 * ZOOM_BUCKET);
-        zoomValue = Math.min(zoomValue, zoomMapping.size() * ZOOM_BUCKET);
-        return true;
-    }
+	@Override
+	public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+		zoomValue += -1 * amount;
+		zoomValue = Math.max(zoomValue, -1 * ZOOM_BUCKET);
+		zoomValue = Math.min(zoomValue, zoomMapping.size() * ZOOM_BUCKET);
+		return true;
+	}
 
-    private int round(int num, int mod) {
-        int t = num % mod;
-        if (t < (int) Math.floor(mod / 2.0))
-            return num - t;
-        else
-            return num + mod - t;
-    }
+	private int round(int num, int mod) {
+		int t = num % mod;
+		if (t < (int) Math.floor(mod / 2.0))
+			return num - t;
+		else
+			return num + mod - t;
+	}
 
 	@Override
 	protected void renderBg(PoseStack matrices, float p_230450_2_, int mouseX, int mouseY) {

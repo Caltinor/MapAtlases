@@ -16,9 +16,6 @@ import pepjebs.dicemc.MapAtlases;
 import pepjebs.dicemc.config.Config;
 import pepjebs.dicemc.setup.Registration;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
 public class MapAtlasesAccessUtils {
 
     public static Map<String, MapItemSavedData> previousMapDatas = new HashMap<>();

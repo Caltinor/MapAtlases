@@ -23,7 +23,7 @@ import pepjebs.dicemc.events.ClientEvents;
 import pepjebs.dicemc.setup.Registration;
 import pepjebs.dicemc.util.MapAtlasesAccessUtils;
 
-@Mod.EventBusSubscriber(modid=MapAtlases.MOD_ID, bus=Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid=MapAtlases.MOD_ID, bus=Mod.EventBusSubscriber.Bus.FORGE, value=Dist.CLIENT)
 public class HudEventHandler {
 	public static final ResourceLocation MAP_CHKRBRD =
             new ResourceLocation("textures/map/map_background_checkerboard.png");

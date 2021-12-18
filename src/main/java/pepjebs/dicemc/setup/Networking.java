@@ -15,7 +15,7 @@ public class Networking {
 			() -> "1.0", 
 			s -> true, 
 			s -> true);
-		
+
 	    public static void registerMessages() { 
 	        int ID = 0;
 	        //Packet list all packets need to be registered
@@ -37,6 +37,7 @@ public class Networking {
 	    }
 	    
 	    public static void sendToClient(Object packet, ServerPlayer player) {
+
 			INSTANCE.sendTo(packet, player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
 		}
 		public static void sendToServer(Object packet) {

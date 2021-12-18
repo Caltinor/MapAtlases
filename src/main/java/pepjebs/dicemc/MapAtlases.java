@@ -4,14 +4,15 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.SimpleRecipeSerializer;
 import net.minecraftforge.common.MinecraftForge;
+
 import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
+import pepjebs.dicemc.config.Config;
 import pepjebs.dicemc.gui.MapAtlasesAtlasOverviewScreenHandler;
 import pepjebs.dicemc.recipe.MapAtlasCreateRecipe;
 import pepjebs.dicemc.recipe.MapAtlasesAddRecipe;
@@ -24,11 +25,16 @@ import pepjebs.dicemc.setup.Registration;
 @Mod(MapAtlases.MOD_ID)
 public class MapAtlases
 {
+	/*  This branch was created just to store a workable
+	*	version of 1.17 somewhere.  This neither launches
+	*	nor does it compile.  
+	*/
 	public static final String MOD_ID = "mapatlases";
     // Directly reference a log4j logger.
     public static final Logger LOGGER = LogManager.getLogger();
 
-    public MapAtlases() {    	
+    public MapAtlases() {  
+    	ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.SERVER_CONFIG);
     	Registration.init();
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::init);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);

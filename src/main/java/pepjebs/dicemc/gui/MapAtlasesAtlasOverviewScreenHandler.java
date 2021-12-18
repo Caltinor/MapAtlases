@@ -19,7 +19,7 @@ public class MapAtlasesAtlasOverviewScreenHandler extends AbstractContainerMenu 
 	@ObjectHolder(MapAtlases.MOD_ID+":gui_container")
 	public static MenuType<MapAtlasesAtlasOverviewScreenHandler> TYPE;
 
-    public Map<Integer, List<Integer>> idsToCenters = new HashMap<>();
+	public Map<Integer, List<Integer>> idsToCenters = new HashMap<>();
 
     public MapAtlasesAtlasOverviewScreenHandler(int syncId, Inventory _playerInventory, FriendlyByteBuf buf) {
         super(TYPE, syncId);
