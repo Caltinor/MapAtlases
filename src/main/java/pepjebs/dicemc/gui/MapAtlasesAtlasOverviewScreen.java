@@ -122,12 +122,13 @@ public class MapAtlasesAtlasOverviewScreen extends AbstractContainerScreen<MapAt
                 double mapTextX = (width - getXSize()) / 2.0 + 8;
                 // Get the map for the GUI idx
                 int reqXCenter = activeXCenter + (j * (1 << activeState.scale) * 128);
-                int reqZCenter = activeZCenter + (i * (1 << activeState.scale) * 128);
+                int reqZCenter = activeZCenter + (i * (1 << activeState.scale) * 128); 
                 MapItemSavedData state = mapStates.stream()
-                        .filter(m -> idsToCenters.get(MapAtlasesAccessUtils.getMapIntFromState(m)).get(0) == reqXCenter
-                                && idsToCenters.get(MapAtlasesAccessUtils.getMapIntFromState(m)).get(1) == reqZCenter)
+                        .filter(m -> idsToCenters.get(MapAtlasesAccessUtils.getMapIntFromState(client.player.level, m)).get(0) == reqXCenter
+                                && idsToCenters.get(MapAtlasesAccessUtils.getMapIntFromState(client.player.level, m)).get(1) == reqZCenter)
                         .findFirst().orElse(null);
                 if (state == null) continue;
+                int stateID = MapAtlasesAccessUtils.getMapIntFromState(client.player.level, state);
                 // Draw the map
                 mapTextX += (mapTextureTranslate * (j + loopEnd - 1));
                 mapTextY += (mapTextureTranslate * (i + loopEnd - 1));
@@ -137,26 +138,28 @@ public class MapAtlasesAtlasOverviewScreen extends AbstractContainerScreen<MapAt
                 matrices.translate(mapTextX, mapTextY, 0.0);
                 matrices.scale(mapTextureScale, mapTextureScale, 0);
                 // Remove the off-map player icons temporarily during render
-                Iterator<Map.Entry<String, MapDecoration>> it = state.decorations.entrySet().iterator();
-                List<Map.Entry<String, MapDecoration>> removed = new ArrayList<>();
-                if (state.getId().compareTo(activeState.getId()) != 0) {
+                Iterator<MapDecoration> it = state.getDecorations().iterator();
+                List<MapDecoration> removed = new ArrayList<>();
+                if (stateID == MapAtlasesAccessUtils.getMapIntFromState(client.player.level, activeState)) {
                     // Only remove the off-map icon if it's not the active map
                     while (it.hasNext()) {
-                        Map.Entry<String, MapDecoration> e = it.next();
-                        if (e.getValue().getType() == MapDecoration.Type.PLAYER_OFF_MAP
-                                || e.getValue().getType() == MapDecoration.Type.PLAYER_OFF_LIMITS) {
+                        MapDecoration e = it.next();
+                        if (e.getType() == MapDecoration.Type.PLAYER_OFF_MAP
+                                || e.getType() == MapDecoration.Type.PLAYER_OFF_LIMITS) {
                             it.remove();
                             removed.add(e);
                         }
                     }
                 }
                 client.gameRenderer.getMapRenderer()
-                        .render(matrices, vcp, state, false, Integer.parseInt("0000000011110000", 2));
+                        .render(matrices, vcp, stateID, state, false, Integer.parseInt("0000000011110000", 2));
                 vcp.endBatch();
                 matrices.popPose();
                 // Re-add the off-map player icons after render
-                for (Map.Entry<String, MapDecoration> e : removed) {
-                    state.decorations.put(e.getKey(), e.getValue());
+                for (MapDecoration e : removed) {
+                	//TODO reimplement
+                	//int id = MapAtlasesAccessUtils.getMapIntFromState(client.player.level, e);
+                    //state.getDecorations().put(id, e);
                 }
             }
         }

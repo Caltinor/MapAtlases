@@ -1,11 +1,12 @@
 package pepjebs.dicemc;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.SimpleRecipeSerializer;
-import net.minecraftforge.common.MinecraftForge;
-
-import net.minecraftforge.common.extensions.IForgeContainerType;
+import net.minecraftforge.common.extensions.IForgeMenuType;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -57,7 +58,7 @@ public class MapAtlases
     }
     
     public void registerContainers(RegistryEvent.Register<MenuType<?>> event) {
-    	event.getRegistry().registerAll(IForgeContainerType.create(MapAtlasesAtlasOverviewScreenHandler::new).setRegistryName("gui_container"));
+    	event.getRegistry().registerAll(IForgeMenuType.create(MapAtlasesAtlasOverviewScreenHandler::new).setRegistryName("gui_container"));
     }
 
     

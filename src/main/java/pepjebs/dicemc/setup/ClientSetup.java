@@ -5,8 +5,9 @@ import org.lwjgl.glfw.GLFW;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.KeyMapping;
 import com.mojang.blaze3d.platform.InputConstants;
+
+import net.minecraftforge.client.ClientRegistry;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fmlclient.registry.ClientRegistry;
 import pepjebs.dicemc.gui.MapAtlasesAtlasOverviewScreen;
 import pepjebs.dicemc.gui.MapAtlasesAtlasOverviewScreenHandler;
 

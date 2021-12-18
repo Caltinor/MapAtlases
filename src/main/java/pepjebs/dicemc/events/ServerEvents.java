@@ -19,9 +19,9 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import net.minecraftforge.event.TickEvent.ServerTickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
+import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fmlserverevents.FMLServerAboutToStartEvent;
 import pepjebs.dicemc.MapAtlases;
 import pepjebs.dicemc.config.Config;
 import pepjebs.dicemc.network.MapAtlasesInitAtlasS2CPacket;
@@ -49,7 +49,7 @@ public class ServerEvents {
 
     
     @SubscribeEvent
-    public static void onServerStart(FMLServerAboutToStartEvent event) {
+    public static void onServerStart(ServerAboutToStartEvent event) {
     	server = event.getServer();
     }
     
@@ -77,12 +77,13 @@ public class ServerEvents {
             if (!atlas.isEmpty()) {
                 MapItemSavedData activeState = MapAtlasesAccessUtils.getActiveAtlasMapData(
                                 player.getCommandSenderWorld(), atlas, player.getName().getString());
+                int activeID = MapAtlasesAccessUtils.getMapIntFromState(player.level, activeState);
                 if (activeState != null) {
                     String playerName = player.getName().getString();
                     if (!playerToActiveMapId.containsKey(playerName)
-                            || playerToActiveMapId.get(playerName).compareTo(activeState.getId()) != 0) {
-                        playerToActiveMapId.put(playerName, activeState.getId());
-                        Networking.sendToClient(new MapAtlasesActiveStateChangePacket(activeState.getId()), player);
+                            || playerToActiveMapId.get(playerName).compareTo(MapItem.makeKey(activeID)) != 0) {
+                        playerToActiveMapId.put(playerName, MapItem.makeKey(activeID));
+                        Networking.sendToClient(new MapAtlasesActiveStateChangePacket(activeID), player);
                     }
                 } else if (MapAtlasesAccessUtils.getEmptyMapCountFromItemStack(atlas) != 0) {
                     MapAtlases.LOGGER.info("Null active MapData with non-empty Atlas");
@@ -100,11 +101,12 @@ public class ServerEvents {
                 for (MapItemSavedData state : mapStates) {
                     state.tickCarriedBy(player, atlas);
                     ((MapItem) Items.FILLED_MAP).update(player.getCommandSenderWorld(), player, state);
-                    ItemStack map = MapAtlasesAccessUtils.createMapItemStackFromStrId(state.getId());
+                    int stateID = MapAtlasesAccessUtils.getMapIntFromState(player.level, state);
+                    //ItemStack map = MapAtlasesAccessUtils.createMapItemStackFromStrId(stateID);
                     Packet<?> p = null;
                     int tries = 0;
                     while (p == null && tries < 10) {
-                        p = state.getUpdatePacket(map, player.getCommandSenderWorld(), player);
+                        p = state.getUpdatePacket(stateID, player);
                         tries++;
                     }
                     if (p != null) {

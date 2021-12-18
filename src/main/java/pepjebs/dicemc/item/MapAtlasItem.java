@@ -22,7 +22,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
-import net.minecraftforge.fmllegacy.network.NetworkHooks;
+import net.minecraftforge.network.NetworkHooks;
 import pepjebs.dicemc.config.Config;
 import pepjebs.dicemc.gui.MapAtlasesAtlasOverviewScreenHandler;
 import pepjebs.dicemc.setup.Registration;
@@ -94,9 +94,9 @@ public class MapAtlasItem extends Item{
     public MapAtlasesAtlasOverviewScreenHandler createMenu(int syncId, Inventory inv, Player player) {
         ItemStack atlas = MapAtlasesAccessUtils.getAtlasFromPlayerByConfig(player.getInventory());
         Map<Integer, List<Integer>> idsToCenters = new HashMap<>();
-        List<ItemStack> Maps = MapAtlasesAccessUtils.getAllMapDatasFromAtlas(player.level, atlas);
-        for (ItemStack state : Maps) {
-            idsToCenters.put(MapAtlasesAccessUtils.getMapIntFromState(state), Arrays.asList(state.x, state.z));
+        List<MapItemSavedData> Maps = MapAtlasesAccessUtils.getAllMapDatasFromAtlas(player.level, atlas);
+        for (MapItemSavedData state : Maps) {
+            idsToCenters.put(MapAtlasesAccessUtils.getMapIntFromState(player.level,state), Arrays.asList(state.x, state.z));
         }
         return new MapAtlasesAtlasOverviewScreenHandler(syncId, inv, idsToCenters);
     }
@@ -109,7 +109,7 @@ public class MapAtlasItem extends Item{
         if (MapDatas.isEmpty()) return;
         packetByteBuf.writeInt(MapDatas.size());
         for (MapItemSavedData state : MapDatas) {
-            packetByteBuf.writeInt(MapAtlasesAccessUtils.getMapIntFromState(state));
+            packetByteBuf.writeInt(MapAtlasesAccessUtils.getMapIntFromState(serverPlayerEntity.level, state));
             packetByteBuf.writeInt(state.x);
             packetByteBuf.writeInt(state.z);
         }

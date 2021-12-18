@@ -37,6 +37,6 @@ public class MapAtlasesAtlasOverviewScreenHandler extends AbstractContainerMenu 
 
 	@Override
 	public boolean stillValid(Player player) {
-		return MapAtlasesAccessUtils.getAtlasFromPlayerByConfig(player.inventory) != ItemStack.EMPTY;
+		return MapAtlasesAccessUtils.getAtlasFromPlayerByConfig(player.getInventory()) != ItemStack.EMPTY;
 	}
 }

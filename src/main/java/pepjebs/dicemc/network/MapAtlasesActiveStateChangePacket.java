@@ -3,7 +3,7 @@ package pepjebs.dicemc.network;
 import java.util.function.Supplier;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.fmllegacy.network.NetworkEvent;
+import net.minecraftforge.network.NetworkEvent;
 import pepjebs.dicemc.events.ClientEvents;
 
 public class MapAtlasesActiveStateChangePacket {

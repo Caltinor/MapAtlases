@@ -7,12 +7,21 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.nbt.CompoundTag;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import net.minecraft.world.level.saveddata.maps.MapDecoration;
-import pepjebs.dicemc.MapAtlases;
 import pepjebs.dicemc.config.Config;
 import pepjebs.dicemc.setup.Registration;
 
@@ -145,10 +154,8 @@ public class MapAtlasesAccessUtils {
     public static MapItemSavedData getActiveAtlasMapData(Level world, ItemStack atlas, String playerName) {
         List<MapItemSavedData> MapDatas = getAllMapDatasFromAtlas(world, atlas);
         for (MapItemSavedData state : MapDatas) {
-            for (Map.Entry<String, MapDecoration> entry : state.getDecorations()) {
-                MapDecoration icon = entry.getValue();
-                // Entry.getKey is "icon-0" on client
-                if (icon.getType() == MapDecoration.Type.PLAYER && entry.getKey().compareTo(playerName) == 0) {
+            for (MapDecoration entry : state.getDecorations()) {
+                if (entry.getType() == MapDecoration.Type.PLAYER) {
                     previousMapDatas.put(playerName, state);
                     return state;
                 }
@@ -156,9 +163,8 @@ public class MapAtlasesAccessUtils {
         }
         if (previousMapDatas.containsKey(playerName)) return previousMapDatas.get(playerName);
         for (MapItemSavedData state : MapDatas) {
-            for (Map.Entry<String, MapDecoration> entry : state.decorations.entrySet()) {
-                if (entry.getValue().getType() == MapDecoration.Type.PLAYER_OFF_MAP
-                        && entry.getKey().compareTo(playerName) == 0) {
+            for (MapDecoration entry : state.getDecorations()) {
+                if (entry.getType() == MapDecoration.Type.PLAYER_OFF_MAP) {
                     previousMapDatas.put(playerName, state);
                     return state;
                 }
@@ -192,4 +198,13 @@ public class MapAtlasesAccessUtils {
         }
         return itemStacks;
     }
+    
+
+	public static int getMapIntFromState(Level world, MapItemSavedData state) {
+		for (int i = 0; i < world.getFreeMapId(); i++) {
+			if (state.equals(world.getServer().overworld().getDataStorage().get(MapItemSavedData::load, MapItem.makeKey(i))))
+					return i;
+		}
+		return 0;
+	}
 }
