@@ -2,13 +2,13 @@ package pepjebs.dicemc.network;
 
 import java.util.function.Supplier;
 
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.SimpleNamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.fmllegacy.network.NetworkEvent.Context;
+import net.minecraftforge.fmllegacy.network.NetworkHooks;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.TextComponent;
 import pepjebs.dicemc.item.MapAtlasItem;
 import pepjebs.dicemc.setup.Registration;
 
@@ -20,22 +20,22 @@ public class MapAtlasesOpenGUIC2SPacket{
         atlas = atlas1;
     }
 
-    public  MapAtlasesOpenGUIC2SPacket(PacketBuffer buf) {
+    public  MapAtlasesOpenGUIC2SPacket(FriendlyByteBuf buf) {
         atlas = buf.readItem();
     }
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         buf.writeItem(atlas);
     }
     
-	public void handle(Supplier<NetworkEvent.Context> ctx) {
+	public void handle(Supplier<Context> ctx) {
 		ctx.get().enqueueWork(() -> {
 			if (!atlas.getItem().equals(Registration.MAP_ATLAS.get())) return;
-			ServerPlayerEntity player = ctx.get().getSender();
-			NetworkHooks.openGui(player, new SimpleNamedContainerProvider(
+			ServerPlayer player = ctx.get().getSender();
+			NetworkHooks.openGui(player, new SimpleMenuProvider(
     				(i, playerInventory, playerEntity) -> ((MapAtlasItem)atlas.getItem()).createMenu(i, playerInventory, playerEntity),
-    				new StringTextComponent("atlas_gui")
-    				), (b) -> ((MapAtlasItem)atlas.getItem()).writeScreenOpeningData((ServerPlayerEntity)player, b));
+    				new TextComponent("atlas_gui")
+    				), (b) -> ((MapAtlasItem)atlas.getItem()).writeScreenOpeningData((ServerPlayer)player, b));
 		});
 	}
 }

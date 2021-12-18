@@ -1,36 +1,35 @@
 package pepjebs.dicemc.recipe;
 
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.item.FilledMapItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.SpecialRecipe;
-import net.minecraft.item.crafting.SpecialRecipeSerializer;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
-import net.minecraft.world.storage.MapData;
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.item.MapItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.CustomRecipe;
+import net.minecraft.world.item.crafting.SimpleRecipeSerializer;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import net.minecraftforge.registries.ObjectHolder;
 import pepjebs.dicemc.MapAtlases;
 import pepjebs.dicemc.setup.Registration;
-import pepjebs.dicemc.util.MapAtlasesAccessUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class MapAtlasCreateRecipe extends SpecialRecipe{
+public class MapAtlasCreateRecipe extends CustomRecipe{
 
-    private World world = null;
+    private Level world = null;
 
     public MapAtlasCreateRecipe(ResourceLocation id) {
         super(id);
     }
 
     @Override
-    public boolean matches(CraftingInventory inv, World world) {
+    public boolean matches(CraftingContainer inv, Level world) {
         this.world = world;
         ArrayList<ItemStack> itemStacks = new ArrayList<>();
         ItemStack filledMap = ItemStack.EMPTY;
@@ -48,8 +47,8 @@ public class MapAtlasCreateRecipe extends SpecialRecipe{
                     items.containsAll(Arrays.asList(Items.FILLED_MAP, Items.SLIME_BALL, Items.BOOK)) ||
                             items.containsAll(Arrays.asList(Items.FILLED_MAP, Items.HONEY_BOTTLE, Items.BOOK));
             if (hasAllCrafting && !filledMap.isEmpty()) {
-                MapData state = FilledMapItem.getOrCreateSavedData(filledMap, world);
-                if (state != null) return state.dimension == World.OVERWORLD;
+                MapItemSavedData state = MapItem.getSavedData(filledMap, world);
+                if (state != null) return state.dimension == Level.OVERWORLD;
                 /*if (state == null) return false;
                 if (false) {
                     return state.dimension == World.OVERWORLD || state.dimension == World.END
@@ -63,7 +62,7 @@ public class MapAtlasCreateRecipe extends SpecialRecipe{
     }
 
     @Override
-    public ItemStack assemble(CraftingInventory inv) {
+    public ItemStack assemble(CraftingContainer inv) {
         ItemStack mapItemStack = null;
         for(int i = 0; i < inv.getContainerSize(); i++) {
             if (inv.getItem(i).sameItem(new ItemStack(Items.FILLED_MAP))) {
@@ -73,7 +72,7 @@ public class MapAtlasCreateRecipe extends SpecialRecipe{
         if (mapItemStack == null || world == null) {
             return ItemStack.EMPTY;
         }
-        MapData mapState = FilledMapItem.getSavedData(mapItemStack, world);
+        MapItemSavedData mapState = MapItem.getSavedData(mapItemStack, world);
         if (mapState == null) return ItemStack.EMPTY;
         Item mapAtlasItem = Registration.MAP_ATLAS.get();
         /*if (MapAtlasesMod.enableMultiDimMaps && mapState.dimension == World.END) {
@@ -83,18 +82,18 @@ public class MapAtlasCreateRecipe extends SpecialRecipe{
         } else {
             mapAtlasItem = Registry.ITEM.get(new ResourceLocation(MapAtlasesMod.MOD_ID, "atlas"));
         }*/
-        CompoundNBT compoundTag = new CompoundNBT();
-        compoundTag.putIntArray("maps", new int[]{MapAtlasesAccessUtils.getMapIntFromState(mapState)});
+        CompoundTag compoundTag = new CompoundTag();
+        compoundTag.putIntArray("maps", new int[]{MapItem.getMapId(mapItemStack)});
         ItemStack atlasItemStack = new ItemStack(mapAtlasItem);
         atlasItemStack.setTag(compoundTag);
         return atlasItemStack;
     }
 
     @Override
-    public IRecipeSerializer<?> getSerializer() {return SERIALIZER;}
+    public RecipeSerializer<?> getSerializer() {return SERIALIZER;}
     
     @ObjectHolder(MapAtlases.MOD_ID+":atlas_create")
-	public static SpecialRecipeSerializer<MapAtlasCreateRecipe> SERIALIZER;
+	public static SimpleRecipeSerializer<MapAtlasCreateRecipe> SERIALIZER;
 
     @Override
     public boolean canCraftInDimensions(int width, int height) {

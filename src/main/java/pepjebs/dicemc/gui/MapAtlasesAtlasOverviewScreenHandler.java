@@ -1,11 +1,11 @@
 package pepjebs.dicemc.gui;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.registries.ObjectHolder;
 import pepjebs.dicemc.MapAtlases;
 import pepjebs.dicemc.util.MapAtlasesAccessUtils;
@@ -15,13 +15,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MapAtlasesAtlasOverviewScreenHandler extends Container {
+public class MapAtlasesAtlasOverviewScreenHandler extends AbstractContainerMenu {
 	@ObjectHolder(MapAtlases.MOD_ID+":gui_container")
-	public static ContainerType<MapAtlasesAtlasOverviewScreenHandler> TYPE;
+	public static MenuType<MapAtlasesAtlasOverviewScreenHandler> TYPE;
 
     public Map<Integer, List<Integer>> idsToCenters = new HashMap<>();
 
-    public MapAtlasesAtlasOverviewScreenHandler(int syncId, PlayerInventory _playerInventory, PacketBuffer buf) {
+    public MapAtlasesAtlasOverviewScreenHandler(int syncId, Inventory _playerInventory, FriendlyByteBuf buf) {
         super(TYPE, syncId);
         if (!buf.isReadable()) return;
         int numToRead = buf.readInt();
@@ -30,13 +30,13 @@ public class MapAtlasesAtlasOverviewScreenHandler extends Container {
         }
     }
 
-    public MapAtlasesAtlasOverviewScreenHandler(int syncId, PlayerInventory _playerInventory, Map<Integer, List<Integer>> idsToCenters1) {
+    public MapAtlasesAtlasOverviewScreenHandler(int syncId, Inventory _playerInventory, Map<Integer, List<Integer>> idsToCenters1) {
         super(TYPE, syncId);
         idsToCenters = idsToCenters1;
     }
 
 	@Override
-	public boolean stillValid(PlayerEntity player) {
+	public boolean stillValid(Player player) {
 		return MapAtlasesAccessUtils.getAtlasFromPlayerByConfig(player.inventory) != ItemStack.EMPTY;
 	}
 }

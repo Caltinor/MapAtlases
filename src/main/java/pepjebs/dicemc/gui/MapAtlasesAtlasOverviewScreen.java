@@ -1,23 +1,24 @@
 package pepjebs.dicemc.gui;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.storage.MapData;
-import net.minecraft.world.storage.MapDecoration;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.MultiBufferSource;
+import com.mojang.blaze3d.vertex.Tesselator;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.MapItem;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
+import net.minecraft.world.level.saveddata.maps.MapDecoration;
 import pepjebs.dicemc.MapAtlases;
 import pepjebs.dicemc.events.ClientEvents;
 import pepjebs.dicemc.util.MapAtlasesAccessUtils;
 
 import java.util.*;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
-public class MapAtlasesAtlasOverviewScreen extends ContainerScreen<MapAtlasesAtlasOverviewScreenHandler> {
+public class MapAtlasesAtlasOverviewScreen extends AbstractContainerScreen<MapAtlasesAtlasOverviewScreenHandler> {
 	private Minecraft client = Minecraft.getInstance();
 
     private static final int ZOOM_BUCKET = 4;
@@ -31,7 +32,7 @@ public class MapAtlasesAtlasOverviewScreen extends ContainerScreen<MapAtlasesAtl
 
     private Map<Integer, List<Double>> zoomMapping;
 
-    public MapAtlasesAtlasOverviewScreen(MapAtlasesAtlasOverviewScreenHandler handler, PlayerInventory inventory, ITextComponent title) {
+    public MapAtlasesAtlasOverviewScreen(MapAtlasesAtlasOverviewScreenHandler handler, Inventory inventory, Component title) {
     	super(handler, inventory, title);
         atlas = MapAtlasesAccessUtils.getAtlasFromPlayerByConfig(inventory);
         idsToCenters = handler.idsToCenters;
@@ -44,7 +45,7 @@ public class MapAtlasesAtlasOverviewScreen extends ContainerScreen<MapAtlasesAtl
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+    public void render(PoseStack matrices, int mouseX, int mouseY, float delta) {
         renderBackground(matrices);
         renderBg(matrices, delta, mouseX, mouseY);
     }
@@ -76,7 +77,7 @@ public class MapAtlasesAtlasOverviewScreen extends ContainerScreen<MapAtlasesAtl
     }
 
 	@Override
-	protected void renderBg(MatrixStack matrices, float p_230450_2_, int mouseX, int mouseY) {
+	protected void renderBg(PoseStack matrices, float p_230450_2_, int mouseX, int mouseY) {
 		if (client == null || client.player == null || client.level == null) return;
         // Handle zooming
         int zoomLevel = round(zoomValue, ZOOM_BUCKET) / ZOOM_BUCKET;
@@ -91,18 +92,18 @@ public class MapAtlasesAtlasOverviewScreen extends ContainerScreen<MapAtlasesAtl
         // Draw map background
         double y = (height - getYSize()) / 2.0;
         double x = (width - getXSize()) / 2.0;
-        client.getTextureManager().bind(HudEventHandler.MAP_CHKRBRD);
+        client.getTextureManager().bindForSetup(HudEventHandler.MAP_CHKRBRD);
         blit(matrices, (int) x, (int) y,0,0, 180, 180, 180, 180);
         // Draw maps, putting active map in middle of grid
-        List<MapData> mapStates = MapAtlasesAccessUtils.getAllMapDatasFromAtlas(client.level, atlas);
-        MapData activeState = client.level.getMapData(ClientEvents.currentMapStateId);
+        List<MapItemSavedData> mapStates = MapAtlasesAccessUtils.getAllMapDatasFromAtlas(client.level, atlas);
+        MapItemSavedData activeState = client.level.getMapData(MapItem.makeKey(ClientEvents.currentMapStateId));
         if (activeState == null) {
             if (!mapStates.isEmpty())
                 activeState = mapStates.get(0);
             else
                 return;
         }
-        int activeMapId = MapAtlasesAccessUtils.getMapIntFromState(activeState);
+        int activeMapId = ClientEvents.currentMapStateId;
         if (!idsToCenters.containsKey(activeMapId)) {
             MapAtlases.LOGGER.warn("Client didn't have idsToCenters entry.");
             if (idsToCenters.isEmpty())
@@ -122,7 +123,7 @@ public class MapAtlasesAtlasOverviewScreen extends ContainerScreen<MapAtlasesAtl
                 // Get the map for the GUI idx
                 int reqXCenter = activeXCenter + (j * (1 << activeState.scale) * 128);
                 int reqZCenter = activeZCenter + (i * (1 << activeState.scale) * 128);
-                MapData state = mapStates.stream()
+                MapItemSavedData state = mapStates.stream()
                         .filter(m -> idsToCenters.get(MapAtlasesAccessUtils.getMapIntFromState(m)).get(0) == reqXCenter
                                 && idsToCenters.get(MapAtlasesAccessUtils.getMapIntFromState(m)).get(1) == reqZCenter)
                         .findFirst().orElse(null);
@@ -130,8 +131,8 @@ public class MapAtlasesAtlasOverviewScreen extends ContainerScreen<MapAtlasesAtl
                 // Draw the map
                 mapTextX += (mapTextureTranslate * (j + loopEnd - 1));
                 mapTextY += (mapTextureTranslate * (i + loopEnd - 1));
-                IRenderTypeBuffer.Impl vcp;
-                vcp = IRenderTypeBuffer.immediate(Tessellator.getInstance().getBuilder());
+                MultiBufferSource.BufferSource vcp;
+                vcp = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
                 matrices.pushPose();
                 matrices.translate(mapTextX, mapTextY, 0.0);
                 matrices.scale(mapTextureScale, mapTextureScale, 0);

@@ -7,21 +7,21 @@ import java.util.Map;
 import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
 
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.FilledMapItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.network.IPacket;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.MapItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.storage.MapData;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import net.minecraftforge.event.TickEvent.ServerTickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
+import net.minecraftforge.fmlserverevents.FMLServerAboutToStartEvent;
 import pepjebs.dicemc.MapAtlases;
 import pepjebs.dicemc.config.Config;
 import pepjebs.dicemc.network.MapAtlasesInitAtlasS2CPacket;
@@ -47,39 +47,6 @@ public class ServerEvents {
     
     public static MinecraftServer server;
 
-    //TODO Figure out what this is for
-    /*public static void openGuiEvent(
-            MinecraftServer server,
-            ServerPlayerEntity player,
-            ServerPlayNetworkHandler _handler,
-            PacketByteBuf buf,
-            PacketSender _responseSender) {
-        MapAtlasesOpenGUIC2SPacket p = new MapAtlasesOpenGUIC2SPacket();
-        p.read(buf);
-        server.execute(() -> {
-            ItemStack atlas = p.atlas;
-            if (!(player.getInventory().offHand.get(0).getTag() != null && atlas.getTag() != null &&
-                    player.getInventory().offHand.get(0).getTag().toString().compareTo(atlas.getTag().toString()) == 0)) {
-                int atlasIdx = player.getInventory().main.size();
-                for (int i = 0; i < player.getInventory().main.size(); i++) {
-                    if (player.getInventory().main.get(i).getItem() == atlas.getItem() &&
-                            player.getInventory().main.get(i).getTag() != null &&
-                            atlas.getTag() != null &&
-                            player.getInventory().main.get(i).getTag().toString().compareTo(atlas.getTag().toString()) == 0) {
-                        atlasIdx = i;
-                        break;
-                    }
-                }
-                if (atlasIdx < PlayerInventory.getHotbarSize()) {
-                    player.getInventory().selectedSlot = atlasIdx;
-                    player.networkHandler.sendPacket(new UpdateSelectedSlotS2CPacket(atlasIdx));
-                }
-            }
-            player.openHandledScreen((MapAtlasItem) atlas.getItem());
-            player.getServerWorld().playSound(null, player.getBlockPos(),
-                    MapAtlasesMod.ATLAS_OPEN_SOUND_EVENT, SoundCategory.PLAYERS, 1.0F, 1.0F);
-        });
-    }*/
     
     @SubscribeEvent
     public static void onServerStart(FMLServerAboutToStartEvent event) {
@@ -89,25 +56,26 @@ public class ServerEvents {
     @SubscribeEvent
     public static void mapAtlasPlayerJoin(PlayerLoggedInEvent event) {
     	if (!event.getPlayer().level.isClientSide) {
-	        ServerPlayerEntity player = (ServerPlayerEntity) event.getPlayer();
-	        ItemStack atlas = MapAtlasesAccessUtils.getAtlasFromPlayerByConfig(player.inventory);
+	        ServerPlayer player = (ServerPlayer) event.getPlayer();
+	        ItemStack atlas = MapAtlasesAccessUtils.getAtlasFromPlayerByConfig(player.getInventory());
 	        if (atlas.isEmpty()) return;
-	        List<MapData> mapStates = MapAtlasesAccessUtils.getAllMapDatasFromAtlas(player.level, atlas);
-	        for (MapData state : mapStates) {
+	        List<Integer> mapIds = MapAtlasesAccessUtils.getMapIdsFromAtlas(player.level, atlas);
+	        for (Integer id : mapIds) {
+	        	MapItemSavedData state = player.level.getMapData(MapItem.makeKey(id));
 	            state.tickCarriedBy(player, atlas);
 	            state.getHoldingPlayer(player);
-	            Networking.sendToClient(new MapAtlasesInitAtlasS2CPacket(state), player);
-	            MapAtlases.LOGGER.info("Server Sent MapState: " + state.getId());
+	            Networking.sendToClient(new MapAtlasesInitAtlasS2CPacket(state, id), player);
+	            MapAtlases.LOGGER.info("Server Sent MapState: " + id);
 	        }
     	}
     }
     
 	@SubscribeEvent
 	public static void mapAtlasServerTick(ServerTickEvent event) {
-        for (ServerPlayerEntity player : server.getPlayerList().getPlayers()) {
-            ItemStack atlas = MapAtlasesAccessUtils.getAtlasFromPlayerByConfig(player.inventory);
+        for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+            ItemStack atlas = MapAtlasesAccessUtils.getAtlasFromPlayerByConfig(player.getInventory());
             if (!atlas.isEmpty()) {
-                MapData activeState = MapAtlasesAccessUtils.getActiveAtlasMapData(
+                MapItemSavedData activeState = MapAtlasesAccessUtils.getActiveAtlasMapData(
                                 player.getCommandSenderWorld(), atlas, player.getName().getString());
                 if (activeState != null) {
                     String playerName = player.getName().getString();
@@ -121,7 +89,7 @@ public class ServerEvents {
                 }
 
 
-                List<MapData> mapStates = MapAtlasesAccessUtils.getAllMapDatasFromAtlas(player.getCommandSenderWorld(), atlas);
+                List<MapItemSavedData> mapStates = MapAtlasesAccessUtils.getAllMapDatasFromAtlas(player.getCommandSenderWorld(), atlas);
 
                 // Maps are 128x128
                 int playX = player.blockPosition().getX();
@@ -129,11 +97,11 @@ public class ServerEvents {
                 int minDist = Integer.MAX_VALUE;
                 int scale = -1;
 
-                for (MapData state : mapStates) {
+                for (MapItemSavedData state : mapStates) {
                     state.tickCarriedBy(player, atlas);
-                    ((FilledMapItem) Items.FILLED_MAP).update(player.getCommandSenderWorld(), player, state);
+                    ((MapItem) Items.FILLED_MAP).update(player.getCommandSenderWorld(), player, state);
                     ItemStack map = MapAtlasesAccessUtils.createMapItemStackFromStrId(state.getId());
-                    IPacket<?> p = null;
+                    Packet<?> p = null;
                     int tries = 0;
                     while (p == null && tries < 10) {
                         p = state.getUpdatePacket(map, player.getCommandSenderWorld(), player);
@@ -162,26 +130,26 @@ public class ServerEvents {
 
                         // Make the new map
                         atlas.getTag().putInt("empty", atlas.getTag().getInt("empty") - 1);
-                        ItemStack newMap = FilledMapItem.create(
+                        ItemStack newMap = MapItem.create(
                                 player.level,
-                                MathHelper.floor(player.getX()),
-                                MathHelper.floor(player.getZ()),
+                                Mth.floor(player.getX()),
+                                Mth.floor(player.getZ()),
                                 (byte) scale,
                                 true,
                                 false);
-                        mapIds.add(FilledMapItem.getMapId(newMap));
+                        mapIds.add(MapItem.getMapId(newMap));
                         atlas.getTag().putIntArray("maps", mapIds);
 
                         // Update the reference in the inventory
                         MapAtlasesAccessUtils.setAllMatchingItemStacks(
-                                player.inventory.offhand, 1, Registration.MAP_ATLAS.get(), oldAtlasTagState, atlas);
+                                player.getInventory().offhand, 1, Registration.MAP_ATLAS.get(), oldAtlasTagState, atlas);
                         MapAtlasesAccessUtils.setAllMatchingItemStacks(
-                                player.inventory.items, 9, Registration.MAP_ATLAS.get(), oldAtlasTagState, atlas);
+                                player.getInventory().items, 9, Registration.MAP_ATLAS.get(), oldAtlasTagState, atlas);
 
                         // Play the sound
                         player.level.playSound(null, player.blockPosition(),
                                 Registration.ATLAS_CREATE_MAP_SOUND_EVENT.get(),
-                                SoundCategory.PLAYERS, 1.0F, 1.0F);
+                                SoundSource.PLAYERS, 1.0F, 1.0F);
                     } catch (InterruptedException e) {
                         MapAtlases.LOGGER.warn(e);
                     } finally {

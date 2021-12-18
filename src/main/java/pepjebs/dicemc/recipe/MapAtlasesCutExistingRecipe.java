@@ -5,28 +5,28 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.SpecialRecipe;
-import net.minecraft.item.crafting.SpecialRecipeSerializer;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.CustomRecipe;
+import net.minecraft.world.item.crafting.SimpleRecipeSerializer;
+import net.minecraft.core.NonNullList;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.ObjectHolder;
 import pepjebs.dicemc.MapAtlases;
 import pepjebs.dicemc.setup.Registration;
 import pepjebs.dicemc.util.MapAtlasesAccessUtils;
 
-public class MapAtlasesCutExistingRecipe extends SpecialRecipe {
+public class MapAtlasesCutExistingRecipe extends CustomRecipe {
 
     public MapAtlasesCutExistingRecipe(ResourceLocation id) {
         super(id);
     }
 
     @Override
-    public NonNullList<ItemStack> getRemainingItems(CraftingInventory inv) {
+    public NonNullList<ItemStack> getRemainingItems(CraftingContainer inv) {
         NonNullList<ItemStack> list = NonNullList.create();
         for(int i = 0; i < inv.getContainerSize(); i++) {
             ItemStack cur = inv.getItem(i).copy();
@@ -54,7 +54,7 @@ public class MapAtlasesCutExistingRecipe extends SpecialRecipe {
     }
 
 	@Override
-	public boolean matches(CraftingInventory inv, World world) {
+	public boolean matches(CraftingContainer inv, Level world) {
 		ItemStack atlas = ItemStack.EMPTY;
 	    ItemStack shears = ItemStack.EMPTY;
 	    int size = 0;
@@ -72,7 +72,7 @@ public class MapAtlasesCutExistingRecipe extends SpecialRecipe {
 	}
 
 	@Override
-	public ItemStack assemble(CraftingInventory inv) {
+	public ItemStack assemble(CraftingContainer inv) {
 		ItemStack atlas = ItemStack.EMPTY;
         for(int i = 0; i < inv.getContainerSize(); i++) {
             if (!inv.getItem(i).isEmpty()) {
@@ -102,8 +102,8 @@ public class MapAtlasesCutExistingRecipe extends SpecialRecipe {
 	}
 
 	@Override
-	public IRecipeSerializer<?> getSerializer() {return SERIALIZER;}
+	public RecipeSerializer<?> getSerializer() {return SERIALIZER;}
 	
 	@ObjectHolder(MapAtlases.MOD_ID+":atlas_cut")
-	public static SpecialRecipeSerializer<MapAtlasesCutExistingRecipe> SERIALIZER;
+	public static SimpleRecipeSerializer<MapAtlasesCutExistingRecipe> SERIALIZER;
 }

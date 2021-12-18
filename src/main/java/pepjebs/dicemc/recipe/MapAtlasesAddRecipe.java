@@ -1,17 +1,17 @@
 package pepjebs.dicemc.recipe;
 
 import com.google.common.primitives.Ints;
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.SpecialRecipe;
-import net.minecraft.item.crafting.SpecialRecipeSerializer;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
-import net.minecraft.world.storage.MapData;
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.CustomRecipe;
+import net.minecraft.world.item.crafting.SimpleRecipeSerializer;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import net.minecraftforge.registries.ObjectHolder;
 import pepjebs.dicemc.MapAtlases;
 import pepjebs.dicemc.config.Config;
@@ -21,23 +21,23 @@ import pepjebs.dicemc.util.MapAtlasesAccessUtils;
 
 import java.util.*;
 
-public class MapAtlasesAddRecipe extends SpecialRecipe {
+public class MapAtlasesAddRecipe extends CustomRecipe {
 
-    private World world = null;
+    private Level world = null;
 
     public MapAtlasesAddRecipe(ResourceLocation id) {
         super(id);
     }
 
     @Override
-    public boolean matches(CraftingInventory inv, World world) {
+    public boolean matches(CraftingContainer inv, Level world) {
         this.world = world;
         List<ItemStack> itemStacks = MapAtlasesAccessUtils.getItemStacksFromGrid(inv);
         ItemStack atlas = MapAtlasesAccessUtils.getAtlasFromItemStacks(itemStacks);
 
         // Ensure there's an Atlas
         if (atlas.isEmpty()) return false;
-        MapData sampleMap = MapAtlasesAccessUtils.getFirstMapDataFromAtlas(world, atlas);
+        MapItemSavedData sampleMap = MapAtlasesAccessUtils.getFirstMapDataFromAtlas(world, atlas);
 
         // Ensure only correct ingredients are present
         List<Item> additems = new ArrayList<>(Arrays.asList(Items.FILLED_MAP, Registration.MAP_ATLAS.get()));
@@ -47,7 +47,7 @@ public class MapAtlasesAddRecipe extends SpecialRecipe {
                 itemStacks,
                 additems)))
             return false;
-        List<MapData> mapStates = MapAtlasesAccessUtils.getMapDatasFromItemStacks(world, itemStacks);
+        List<MapItemSavedData> mapStates = MapAtlasesAccessUtils.getMapDatasFromItemStacks(world, itemStacks);
 
         // Ensure we're not trying to add too many Maps
         int empties = MapAtlasesAccessUtils.getEmptyMapCountFromItemStack(atlas);
@@ -64,7 +64,7 @@ public class MapAtlasesAddRecipe extends SpecialRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingInventory inv) {
+    public ItemStack assemble(CraftingContainer inv) {
         if (world == null) return ItemStack.EMPTY;
         List<ItemStack> itemStacks = MapAtlasesAccessUtils.getItemStacksFromGrid(inv);
         // Grab the Atlas in the Grid
@@ -73,7 +73,7 @@ public class MapAtlasesAddRecipe extends SpecialRecipe {
         Set<Integer> mapIds = MapAtlasesAccessUtils.getMapIdsFromItemStacks(world, itemStacks);
         // Set NBT Data
         int emptyMapCount = (int)itemStacks.stream().filter(i -> i.sameItem(new ItemStack(Items.MAP))).count();
-        CompoundNBT compoundTag = atlas.getOrCreateTag();
+        CompoundTag compoundTag = atlas.getOrCreateTag();
         Set<Integer> existingMaps = new HashSet<>(Ints.asList(compoundTag.getIntArray("maps")));
         existingMaps.addAll(mapIds);
         compoundTag.putIntArray("maps", existingMaps.stream().mapToInt(i->i).toArray());
@@ -83,10 +83,10 @@ public class MapAtlasesAddRecipe extends SpecialRecipe {
     }
 
     @Override
-	public IRecipeSerializer<?> getSerializer() {return SERIALIZER;}
+	public RecipeSerializer<?> getSerializer() {return SERIALIZER;}
 	
 	@ObjectHolder(MapAtlases.MOD_ID+":atlas_add")
-	public static SpecialRecipeSerializer<MapAtlasesAddRecipe> SERIALIZER;
+	public static SimpleRecipeSerializer<MapAtlasesAddRecipe> SERIALIZER;
 
     @Override
     public boolean canCraftInDimensions(int width, int height) {
