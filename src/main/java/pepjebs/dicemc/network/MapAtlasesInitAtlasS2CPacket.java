@@ -2,38 +2,38 @@ package pepjebs.dicemc.network;
 
 import java.util.function.Supplier;
 
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.world.storage.MapData;
-import net.minecraftforge.fml.network.NetworkEvent;
-import pepjebs.dicemc.util.MapAtlasesAccessUtils;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.item.MapItem;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
+import net.minecraftforge.fmllegacy.network.NetworkEvent.Context;
 
 public class MapAtlasesInitAtlasS2CPacket{
-	private MapData mapState;
+    private MapItemSavedData mapData;
+    private int id;
 
-	public MapAtlasesInitAtlasS2CPacket(PacketBuffer buf){
-		int mapId = buf.readInt();
-		mapState = new MapData("map_" + mapId);
-		mapState.deserializeNBT(buf.readAnySizeNbt());
-	}
+    public MapAtlasesInitAtlasS2CPacket(FriendlyByteBuf buf){
+    	id = buf.readInt();
+        mapData = MapItemSavedData.load(buf.readAnySizeNbt());
+    }
 
-	public MapAtlasesInitAtlasS2CPacket(MapData mapState1) {
-		mapState = mapState1;
-	}
+    public MapAtlasesInitAtlasS2CPacket(MapItemSavedData mapData, int id) {
+    	this.id = id;
+        this.mapData = mapData;
+    }
 
-	public void toBytes(PacketBuffer buf) {
-		CompoundNBT mapAsTag = new CompoundNBT();
-		mapState.save(mapAsTag);
-		buf.writeInt(MapAtlasesAccessUtils.getMapIntFromState(mapState));
-		buf.writeNbt(mapAsTag);
-	}
+    public void toBytes(FriendlyByteBuf buf) {
+    	buf.writeInt(id);
+        buf.writeNbt(mapData.save(new CompoundTag()));
+    }
 
-	public MapData getMapState() {return this.mapState;}
+    public MapItemSavedData getMapState(Level level) {return mapData;}
 
-	public boolean handle(Supplier<NetworkEvent.Context> ctx) {
+	public boolean handle(Supplier<Context> ctx) {
 		ctx.get().enqueueWork(() -> {
 			if (ctx.get().getSender() != null)
-				ctx.get().getSender().level.setMapData(mapState);
+				ctx.get().getSender().level.setMapData(MapItem.makeKey(id), mapData);
 		});
 		return true;
 	}
