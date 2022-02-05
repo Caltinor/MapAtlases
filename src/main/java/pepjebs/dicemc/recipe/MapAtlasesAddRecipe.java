@@ -77,7 +77,7 @@ public class MapAtlasesAddRecipe extends CustomRecipe {
         CompoundTag compoundTag = atlas.getOrCreateTag();
         Set<Integer> existingMaps = new HashSet<>(Ints.asList(compoundTag.getIntArray("maps")));
         existingMaps.addAll(mapIds);
-        compoundTag.putIntArray("maps", existingMaps.stream().mapToInt(i->i).toArray());
+        compoundTag.putIntArray("maps", existingMaps.stream().mapToInt(i-> i != null ? i : 0).toArray());
         compoundTag.putInt("empty", emptyMapCount + compoundTag.getInt("empty"));
         atlas.setTag(compoundTag);
         return atlas;

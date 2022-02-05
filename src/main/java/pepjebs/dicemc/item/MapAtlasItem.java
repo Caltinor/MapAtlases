@@ -52,23 +52,23 @@ public class MapAtlasItem extends Item{
         if (world != null && world.isClientSide()) {
             MapItemSavedData MapData = MapAtlasesAccessUtils.getFirstMapDataFromAtlas(world, stack);
             if (MapData == null) {
-                tooltip.add(new TranslatableComponent("item.map_atlases.atlas.tooltip_err")
+                tooltip.add(new TranslatableComponent("item.mapatlases.atlas.tooltip_err")
                         .withStyle(ChatFormatting.ITALIC).withStyle(ChatFormatting.GRAY));
                 return;
             }
             int mapSize = MapAtlasesAccessUtils.getMapCountFromItemStack(stack);
             int empties = MapAtlasesAccessUtils.getEmptyMapCountFromItemStack(stack);
             if (mapSize + empties >= getMaxMapCount()) {
-                tooltip.add(new TranslatableComponent("item.map_atlases.atlas.tooltip_full")
+                tooltip.add(new TranslatableComponent("item.mapatlases.atlas.tooltip_full")
                         .withStyle(ChatFormatting.ITALIC).withStyle(ChatFormatting.GRAY));
             }
-            tooltip.add(new TranslatableComponent("item.map_atlases.atlas.tooltip_1", mapSize)
+            tooltip.add(new TranslatableComponent("item.mapatlases.atlas.tooltip_1", mapSize)
                     .withStyle(ChatFormatting.GRAY));
             if (Config.ENABLE_EMPTY_MAP_ENTRY_AND_FILL.get()) {
-                tooltip.add(new TranslatableComponent("item.map_atlases.atlas.tooltip_2", empties)
+                tooltip.add(new TranslatableComponent("item.mapatlases.atlas.tooltip_2", empties)
                         .withStyle(ChatFormatting.GRAY));
             }
-            tooltip.add(new TranslatableComponent("item.map_atlases.atlas.tooltip_3", 1 << MapData.scale)
+            tooltip.add(new TranslatableComponent("item.mapatlases.atlas.tooltip_3", 1 << MapData.scale)
                     .withStyle(ChatFormatting.GRAY));
         }
     }

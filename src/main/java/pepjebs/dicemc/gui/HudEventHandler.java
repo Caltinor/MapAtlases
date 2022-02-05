@@ -51,6 +51,8 @@ public class HudEventHandler {
         // Check F3 menu displayed
         if (mc.options.renderDebug) return ItemStack.EMPTY;
         // Check the hot-bar for an Atlas
+        if (ClientEvents.currentMapStateId == null) return ItemStack.EMPTY;
+        
         return MapAtlasesAccessUtils.getAtlasFromPlayerByConfig(mc.player.getInventory());
     }
 	
@@ -84,7 +86,7 @@ public class HudEventHandler {
         }
         int x = client.getWindow().getGuiScaledWidth()-mapScaling;
         client.getTextureManager().bindForSetup(MAP_CHKRBRD);
-        GuiComponent.blit(matrices,x,y,0,0,mapScaling,mapScaling, mapScaling, mapScaling);
+        GuiComponent.blit(matrices,x,y,0,0,mapScaling,mapScaling, mapScaling,mapScaling);
         client.getTextureManager().bindForSetup(GuiComponent.GUI_ICONS_LOCATION);
         // Draw map data
         x += (mapScaling / 16) - (mapScaling / 64);

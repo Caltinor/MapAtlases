@@ -93,7 +93,7 @@ public class MapAtlasesAtlasOverviewScreen extends AbstractContainerScreen<MapAt
         double y = (height - getYSize()) / 2.0;
         double x = (width - getXSize()) / 2.0;
         client.getTextureManager().bindForSetup(HudEventHandler.MAP_CHKRBRD);
-        blit(matrices, (int) x, (int) y,0,0, 180, 180, 180, 180);
+        blit(matrices, (int) x, (int) y,180,180, 0, 0);
         // Draw maps, putting active map in middle of grid
         List<MapItemSavedData> mapStates = MapAtlasesAccessUtils.getAllMapDatasFromAtlas(client.level, atlas);
         MapItemSavedData activeState = client.level.getMapData(MapItem.makeKey(ClientEvents.currentMapStateId));
@@ -138,14 +138,14 @@ public class MapAtlasesAtlasOverviewScreen extends AbstractContainerScreen<MapAt
                 matrices.translate(mapTextX, mapTextY, 0.0);
                 matrices.scale(mapTextureScale, mapTextureScale, 0);
                 // Remove the off-map player icons temporarily during render
-                Iterator<MapDecoration> it = state.getDecorations().iterator();
-                List<MapDecoration> removed = new ArrayList<>();
+                Iterator<Map.Entry<String, MapDecoration>> it = state.decorations.entrySet().iterator();
+                List<Map.Entry<String, MapDecoration>> removed = new ArrayList<>();
                 if (stateID == MapAtlasesAccessUtils.getMapIntFromState(client.player.level, activeState)) {
                     // Only remove the off-map icon if it's not the active map
                     while (it.hasNext()) {
-                        MapDecoration e = it.next();
-                        if (e.getType() == MapDecoration.Type.PLAYER_OFF_MAP
-                                || e.getType() == MapDecoration.Type.PLAYER_OFF_LIMITS) {
+                        Map.Entry<String, MapDecoration> e = it.next();
+                        if (e.getValue().getType() == MapDecoration.Type.PLAYER_OFF_MAP
+                                || e.getValue().getType() == MapDecoration.Type.PLAYER_OFF_LIMITS) {
                             it.remove();
                             removed.add(e);
                         }
@@ -156,10 +156,8 @@ public class MapAtlasesAtlasOverviewScreen extends AbstractContainerScreen<MapAt
                 vcp.endBatch();
                 matrices.popPose();
                 // Re-add the off-map player icons after render
-                for (MapDecoration e : removed) {
-                	//TODO reimplement
-                	//int id = MapAtlasesAccessUtils.getMapIntFromState(client.player.level, e);
-                    //state.getDecorations().put(id, e);
+                for (Map.Entry<String, MapDecoration> e : removed) {
+                    state.decorations.put(e.getKey(), e.getValue());
                 }
             }
         }

@@ -15,5 +15,6 @@ public class MapAtlasesActiveStateChangePacket {
 	
 	public void handle(Supplier<NetworkEvent.Context> ctx) {
 		ctx.get().enqueueWork(() -> {ClientEvents.currentMapStateId = activeMap;});
+		ctx.get().setPacketHandled(true);
 	}
 }

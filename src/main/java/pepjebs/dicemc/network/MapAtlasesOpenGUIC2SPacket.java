@@ -37,5 +37,6 @@ public class MapAtlasesOpenGUIC2SPacket{
     				new TextComponent("atlas_gui")
     				), (b) -> ((MapAtlasItem)atlas.getItem()).writeScreenOpeningData((ServerPlayer)player, b));
 		});
+		ctx.get().setPacketHandled(true);
 	}
 }

@@ -30,11 +30,11 @@ public class MapAtlasesInitAtlasS2CPacket{
 
     public MapItemSavedData getMapState(Level level) {return mapData;}
 
-	public boolean handle(Supplier<Context> ctx) {
+	public void handle(Supplier<Context> ctx) {
 		ctx.get().enqueueWork(() -> {
 			if (ctx.get().getSender() != null)
 				ctx.get().getSender().level.setMapData(MapItem.makeKey(id), mapData);
 		});
-		return true;
+		ctx.get().setPacketHandled(true);
 	}
 }

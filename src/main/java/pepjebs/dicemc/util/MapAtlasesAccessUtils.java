@@ -72,8 +72,7 @@ public class MapAtlasesAccessUtils {
         for (int mapId : mapIds) {
             MapItemSavedData state = world.getMapData(MapItem.makeKey(mapId));
             if (state == null && world instanceof ServerLevel) {
-                ItemStack map = createMapItemStackFromId(mapId);
-                state = MapItem.getSavedData(map, world);
+                state = MapItem.getSavedData(mapId, world);
             }
             if (state != null) {
                 MapDatas.add(state);
@@ -201,6 +200,7 @@ public class MapAtlasesAccessUtils {
     
 
 	public static int getMapIntFromState(Level world, MapItemSavedData state) {
+		if (state == null) return 0;
 		for (int i = 0; i < world.getFreeMapId(); i++) {
 			if (state.equals(world.getServer().overworld().getDataStorage().get(MapItemSavedData::load, MapItem.makeKey(i))))
 					return i;

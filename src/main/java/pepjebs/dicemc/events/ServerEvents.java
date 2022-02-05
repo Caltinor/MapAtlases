@@ -76,7 +76,7 @@ public class ServerEvents {
             ItemStack atlas = MapAtlasesAccessUtils.getAtlasFromPlayerByConfig(player.getInventory());
             if (!atlas.isEmpty()) {
                 MapItemSavedData activeState = MapAtlasesAccessUtils.getActiveAtlasMapData(
-                                player.getCommandSenderWorld(), atlas, player.getName().getString());
+                                player.getLevel(), atlas, player.getName().getString());
                 int activeID = MapAtlasesAccessUtils.getMapIntFromState(player.level, activeState);
                 if (activeState != null) {
                     String playerName = player.getName().getString();
@@ -131,7 +131,7 @@ public class ServerEvents {
                         mutex.acquire();
 
                         // Make the new map
-                        atlas.getTag().putInt("empty", atlas.getTag().getInt("empty") - 1);
+                        atlas.getTag().putInt("empty", emptyCount - 1);
                         ItemStack newMap = MapItem.create(
                                 player.level,
                                 Mth.floor(player.getX()),
@@ -139,6 +139,7 @@ public class ServerEvents {
                                 (byte) scale,
                                 true,
                                 false);
+                        System.out.println(newMap.serializeNBT().toString()); //TODO remove
                         mapIds.add(MapItem.getMapId(newMap));
                         atlas.getTag().putIntArray("maps", mapIds);
 
