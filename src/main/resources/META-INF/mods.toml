@@ -1,31 +1,29 @@
-modLoader="javafml"
-loaderVersion="[37,)"
-license="All rights reserved"
+modLoader="javafml" #mandatory
+# A version range to match for said mod loader - for regular FML @Mod it will be the forge version
+loaderVersion="[38,)" #mandatory (28 is current forge version)
+
+license="GNU General Public License v3.0"
 
 [[mods]] #mandatory
-modId="mapatlases" #mandatory
+modId="map_atlases" #mandatory
 version="${file.jarVersion}" #mandatory
-displayName="Map Atlases"
+displayName="Map Atlases" #mandatory
+logoFile="icon.png" #optional
+credits="pepperoni jabroni for the original mod, caltinor for making the previous forge port" #optional
+authors="pepperoni jabroni, lilypuree" #optional
 description='''
 A Vanilla Style mapping mod
 '''
-# A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
-[[dependencies.examplemod]] #optional
-    # the modid of the dependency
+
+[[dependencies.map_atlases]]
     modId="forge" #mandatory
-    # Does this dependency have to exist - if not, ordering below must be specified
     mandatory=true #mandatory
-    # The version range of the dependency
-    versionRange="[37,)" #mandatory
-    # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
+    versionRange="[38,)" #mandatory
     ordering="NONE"
-    # Side this dependency is applied on - BOTH, CLIENT or SERVER
     side="BOTH"
-# Here's another dependency
-[[dependencies.examplemod]]
+[[dependencies.map_atlases]]
     modId="minecraft"
     mandatory=true
-# This version range declares a minimum of the current minecraft version up to but not including the next major version
-    versionRange="[1.17.1,1.18)"
+    versionRange="[1.18,)"
     ordering="NONE"
     side="BOTH"
