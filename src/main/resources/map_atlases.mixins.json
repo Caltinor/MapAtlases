@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "package": "lilypuree.mapatlases.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "map_atlases.refmap.json",
+  "mixins": [
+    "MapStateMemberAccessor"
+  ],
+  "client": [
+    "MapRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "minVersion": "0.8"
+}
